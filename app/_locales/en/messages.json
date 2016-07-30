@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Tomato",
+    "description": "The name of the application"
+  },
+  "appDescription": {
+    "message": "Submit resources for tomato subjects.",
+    "description": "The description of the application"
+  }
+}
