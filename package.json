@@ -1,0 +1,18 @@
+{
+  "name": "tomato-crx",
+  "version": "1.0.0",
+  "description": " Chrome Extension For tomato.today",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com/tomatotoday/tomato-crx"
+  },
+  "keywords": [
+    "tomato"
+  ],
+  "author": "Lin Ju <soasme@gmail.com>",
+  "license": "MIT"
+}
