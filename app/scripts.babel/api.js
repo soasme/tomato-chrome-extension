@@ -1,7 +1,8 @@
 'use strict'
 
-function getResourcesByISBN(isbn) {
-  return [
+function getResourcesByISBN(isbn, filter, limit) {
+  var dfd = jQuery.Deferred();
+  dfd.resolve([
     {
       'id': 1,
       'title': 'This is mocking data.',
@@ -14,5 +15,12 @@ function getResourcesByISBN(isbn) {
         'url': 'https://tomato.today/users/1/',
       }
     }
-  ]
+  ])
+  return dfd.promise();
+}
+
+function voteResource(resourceId) {
+  var dfd = jQuery.Deferred();
+  dfd.resolve(true)
+  return dfd.promise();
 }
