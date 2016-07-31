@@ -30,11 +30,13 @@
   "content_scripts": [
     {
       "matches": [
-        "http://*/*",
-        "https://*/*"
+        "https://book.douban.com/subject/*/*"
       ],
       "js": [
-        "scripts/contentscript.js"
+        "bower_components/jquery/dist/jquery.min.js",
+        "bower_components/handlebars/handlebars.min.js",
+        "scripts/api.js",
+        "scripts/contentscript/douban.js"
       ],
       "run_at": "document_end",
       "all_frames": false
