@@ -10,6 +10,7 @@ const $ = gulpLoadPlugins();
 gulp.task('extras', () => {
   return gulp.src([
     'app/*.*',
+    'app/bower_components/**',
     'app/_locales/**',
     '!app/scripts.babel',
     '!app/*.json',
