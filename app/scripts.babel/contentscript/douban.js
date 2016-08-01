@@ -53,7 +53,7 @@ var source = `
   }
 </style>
 <div class="mod-hd">
-  <a href="{{addResourceUrl}}" class="redbutt j add-resource-btn">
+  <a class="redbutt j add-resource-btn rr">
     <span>我来贴链接</span>
   </a>
   <h2>
@@ -102,6 +102,8 @@ var source = `
 var template = Handlebars.compile(source)
 var isbnMatch = $(".subject #info").html().match(/(97[89]\d{9}[\dXx])/)
 var isbn = isbnMatch[1]
+
+
 
 $.when(
   getResourcesByISBN(isbn, 'latest', 5),
@@ -154,6 +156,22 @@ $.when(
       if (voted) {
         $this.parent().append($("<span>已投票</span>"))
         $this.remove()
+      }
+    })
+  })
+
+  $(".add-resource-btn").on('click', function(e) {
+    var message = {
+      action: 'addResource',
+      payload: {
+        url: 'https://book.douban.com',
+        title: 'douban book',
+      }
+    }
+
+    sendMessage(message, function(response) {
+      if (response.status === "success") {
+        alert("添加成功")
       }
     })
   })
