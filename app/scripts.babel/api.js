@@ -1,5 +1,15 @@
 'use strict'
 
+var ENV = {
+  // fixture: true,
+  fixture: false,
+
+  // remote: 'http://127.0.0.1:8000',
+
+  // needAuthorization: false,
+  needAuthorization: true,
+}
+
 function getResourcesByISBN(isbn, filter, limit) {
   var dfd = jQuery.Deferred();
   dfd.resolve([
@@ -20,7 +30,20 @@ function getResourcesByISBN(isbn, filter, limit) {
 }
 
 function voteResource(resourceId) {
-  var dfd = jQuery.Deferred();
+  var dfd = jQuery.Deferred()
   dfd.resolve(true)
-  return dfd.promise();
+  return dfd.promise()
+}
+
+function getOAuth2Token(){
+  var dfd = jQuery.Deferred()
+  console.log(dfd, ENV.fixture, ENV.needAuthorization, window.oauth2.getToken())
+  if (ENV.fixture) {
+    dfd.resolve("abcde-abcde-abcde-abcde-abcde")
+  } else if (ENV.needAuthorization && !window.oauth2.getToken()) {
+    window.oauth2.start()
+  } else {
+    dfd.resolve(window.oauth2.getToken())
+  }
+  return dfd.promise()
 }
