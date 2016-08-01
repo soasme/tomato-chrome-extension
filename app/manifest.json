@@ -11,7 +11,11 @@
   "background": {
     "scripts": [
       "scripts/chromereload.js",
-      "scripts/background.js"
+      "scripts/oauth2/oauth2.js",
+      "scripts/oauth2/adapters/tomato.js",
+      "scripts/oauth2/adapters/tomato-dev.js",
+      "scripts/background/shared.js",
+      "scripts/background/background.js"
     ]
   },
   "permissions": [
@@ -23,11 +27,24 @@
     "contentSettings",
     "storage"
   ],
+  "web_accessible_resources": [
+    "oauth2.html"
+  ],
   "options_ui": {
     "page": "options.html",
     "chrome_style": true
   },
   "content_scripts": [
+    {
+      "matches": ["http://127.0.0.1:8000/robots.txt*"],
+      "js": ["scripts/oauth2/oauth2_inject.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["http://tomato.today/robots.txt*"],
+      "js": ["scripts/oauth2/oauth2_inject.js"],
+      "run_at": "document_start"
+    },
     {
       "matches": [
         "https://book.douban.com/subject/*/*"
@@ -35,6 +52,7 @@
       "js": [
         "bower_components/jquery/dist/jquery.min.js",
         "bower_components/handlebars/handlebars.min.js",
+        "scripts/background/shared.js",
         "scripts/api.js",
         "scripts/contentscript/douban.js"
       ],
