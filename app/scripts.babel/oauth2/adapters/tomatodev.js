@@ -1,4 +1,4 @@
-OAuth2.adapter('tomato-dev', {
+OAuth2.adapter('tomatodev', {
   /**
    * @return {URL} URL to the page that returns the authorization code
    */
