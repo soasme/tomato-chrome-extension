@@ -12,8 +12,10 @@
     "scripts": [
       "scripts/chromereload.js",
       "scripts/oauth2/oauth2.js",
+      "scripts/oauth2/oauth2_inject.js",
+      "scripts/oauth2/oauth2_finish.js",
       "scripts/oauth2/adapters/tomato.js",
-      "scripts/oauth2/adapters/tomato-dev.js",
+      "scripts/oauth2/adapters/tomatodev.js",
       "scripts/background/shared.js",
       "scripts/background/background.js"
     ]
@@ -28,7 +30,9 @@
     "storage"
   ],
   "web_accessible_resources": [
-    "oauth2.html"
+    "oauth2.html",
+    "scripts/oauth2/oauth2_inject.js",
+    "scripts/oauth2/oauth2_finish.js"
   ],
   "options_ui": {
     "page": "options.html",
@@ -36,12 +40,16 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://127.0.0.1:8000/robots.txt*"],
-      "js": ["scripts/oauth2/oauth2_inject.js"],
+      "matches": ["http://127.0.0.1:8000/chrome/extensions/success*"],
+      "js": [
+        "scripts/oauth2/oauth2_inject.js",
+        "scripts/oauth2/oauth2_finish.js",
+        "scripts/oauth2/adapters/tomatodev.js"
+      ],
       "run_at": "document_start"
     },
     {
-      "matches": ["http://tomato.today/robots.txt*"],
+      "matches": ["https://tomato.today/chrome/extensions/success*"],
       "js": ["scripts/oauth2/oauth2_inject.js"],
       "run_at": "document_start"
     },
