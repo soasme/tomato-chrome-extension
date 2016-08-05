@@ -137,7 +137,7 @@ $.when(
 
   // render template
   var $el = $(template(data))
-  $el.insertAfter($("#rec-ebook-section"))
+  $el.insertAfter($("#db-tags-section"))
 
   // init tab
   $(".short-resource-tabs").on('click', function(e) {
@@ -171,7 +171,7 @@ $.when(
 
     sendMessage(message, function(response) {
       if (response.status === "success") {
-        alert("添加成功")
+        alert("添加成功:" + response.token)
       }
     })
   })
