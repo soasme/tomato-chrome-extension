@@ -94,37 +94,6 @@ var source = `
   #resource-list-wrapper .resource-list.show {
     display: block
   }
-
-  .dialog-overlay, .dialog-box, .dialog-shadow {margin:0; padding:0; position:fixed; _position:absolute;}
-  .dialog-overlay {left:0; top:0; width:100%; height:100%; min-height:100px; background:#FFF;}
-  .dialog-shadow {background:#333; border-radius:6px; overflow:hidden;}
-  .dialog-box {background:#FFF; border:1px solid #BBB; font-size:14px; font-style:normal; font-weight:normal; text-align:left;}
-  .dialog-box .dialog-header {padding-left:10px; padding-right:10px; font:14px/150% Arial,Helvetica,sans-serif; -moz-user-select:none; -webkit-user-select:none; -ms-user-select:none;}
-  .dialog-box .dialog-header, .dialog-box .dialog-footer {background:#EBF5EA;}
-  .dialog-box .dialog-header {color:#006600; line-height:1.2; padding-top:12px; padding-bottom:12px;}
-  .dialog-box .dialog-header .dialog-close, .dialog-box .dialog-header .dialog-close:visited {outline:none; cursor:pointer; display:block; margin-right:-4px; _margin-right:-2px; margin-top:-2px; padding:1px 4px; text-decoration:none; color:#CCC; float:right; font-family:Georgia,Times,"Times New Roman",serif; font-size:14px;}
-  .dialog-box .dialog-header .dialog-close:hover, .dialog-box .dialog-header .dialog-close:active {background:#FFF6ED; color:#F00; border-radius:5px;}
-  .dialog-box .dialog-content {font-size:12px; background:#FFF; color:#111; float:left;}
-  .dialog-box .dialog-content .dialog-content-box, .dialog-box .dialog-content .dialog-tips {padding: 10px 10px 25px;}
-  .dialog-box .dialog-content .dialog-content-tips {text-align:center; vertical-align:middle;}
-  .dialog-box .dialog-content, .dialog-box .dialog-content p {word-wrap:break-word; word-break:break-all;}
-  .dialog-confirm .dialog-content {background-color:#FFC;}
-  .dialog-error .dialog-header, .dialog-error .dialog-content {color:#C00;}
-  .dialog-box .dialog-button {float:right; margin-left:5px; display:-moz-inline-box; display:inline-block; border-width:1px; _border:0; border-style:solid; border-color:#bbb #bbb #999; *display:inline; *zoom:1; color:#444; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px; overflow:hidden; vertical-align:middle;}
-  .dialog-box .dialog-button:hover {border-color:#999 #999 #666; color:#333; }
-  .dialog-box .dialog-button input {float:left; text-align:center; border:none; height:25px; margin:0 !important; padding:0 14px; color:#333; background:transparent url(images/dialog-button.png) repeat-x 0 0\9; font-size:12px; *padding:3px 8px 0; cursor:pointer; -webkit-appearance:none; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px; background-image:-moz-linear-gradient(-90deg, #fcfcfc 0, #e9e9e9 100%); background-image:-webkit-gradient(linear,left top,left bottom, color-stop(0, #fcfcfc), color-stop(1, #e9e9e9));}
-  .dialog-box .dialog-button input {_border-width:1px; _border-style:solid; _border-color:#bbb #bbb #999;}
-  .dialog-box .dialog-button input:hover,
-  .dialog-box .dialog-button-over input{color:#333 !important; background-color:transparent !important; background-position:1px -6px\9; background-image:-moz-linear-gradient(-90deg, #f8f8f8 0, #ddd 100%); background-image:-webkit-gradient(linear,left top,left bottom, color-stop(0, #f8f8f8), color-stop(1, #ddd));}
-  .dialog-box .dialog-button-over input{_border-color:#999 #999 #666; _color:#333;}
-  .dialog-box .dialog-button input:active,
-  .dialog-box .dialog-button-active input{background:#ddd !important; color:#333 !important; border-color:#999 #999 #666 !important;}
-  @media all and (-webkit-min-device-pixel-ratio:10000),not all and (-webkit-min-device-pixel-ratio:0){
-      .dialog-box .dialog-button input { background:transparent url(images/dialog-button.png) repeat-x 0 0;}
-      .dialog-box .dialog-button input:hover, .dialog-box .dialog-button-over input {background-position:1px 6px;}
-  }
-  .dialog-box .dialog-footer {border-top:1px solid #D9E2E9; padding-top:10px; padding-bottom:10px; width:100%; overflow:hidden;}
-  .dialog-box .dialog-footer .dialog-buttons {margin-right:10px;}
 </style>
 <div class="mod-hd">
   <a class="redbutt j add-resource-btn rr">
