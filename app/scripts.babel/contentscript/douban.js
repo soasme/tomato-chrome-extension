@@ -206,12 +206,36 @@ $.when(
   // init add button
   $(".add-resource-btn").on('click', function(e) {
     // init modal
-    show_tomato_dialog(null)
+    show_tomato_dialog(`
+      <div>
+        <div class="indentpop1 clearfix">
+          <form class="j book-sns tomato-resource-form">
+            <div class="resource-form-hd interest-form-hd">
+              <span class="gact rr"><a href="javascript:;" onclick="close_dialog()">x</a></span>
+              <h2>添加番茄资源</h2>
+            </div>
+            <ul class="interest_form resource_form" id="advtags">
+            <li>标题</li>
+            <li> <input name="title" type="text" class="inp-tags"> </li>
+            <li>链接</li>
+            <li> <input name="url" type="url" class="inp-tags"> </li>
+            <li>文字</li>
+            <li>
+              <textarea name="description" class="comment" id="description" maxlength="350"></textarea>
+            </li>
+            </ul>
+            <div id="tomato-submits">
+              <input type="submit" value="保存" name="save">
+            </div>
+          </form>
+        </div>
+      </div>
+    `)
     var title = 'title'
     var url = 'https://tomato.today'
     var text = 'text'
     addResource(title, url, text).done(function(isSuccess) {
-      alert('success')
+      //alert('success')
     })
 
   })
