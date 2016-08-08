@@ -35,15 +35,9 @@ function voteResource(resourceId) {
   return dfd.promise()
 }
 
-function getOAuth2Token(){
+function addResource(title, url, text) {
   var dfd = jQuery.Deferred()
-  console.log(dfd, ENV.fixture, ENV.needAuthorization, window.oauth2.getToken())
-  if (ENV.fixture) {
-    dfd.resolve("abcde-abcde-abcde-abcde-abcde")
-  } else if (ENV.needAuthorization && !window.oauth2.getToken()) {
-    window.oauth2.start()
-  } else {
-    dfd.resolve(window.oauth2.getToken())
-  }
+  dfd.resolve(true)
   return dfd.promise()
 }
+
