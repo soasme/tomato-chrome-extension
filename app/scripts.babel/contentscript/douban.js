@@ -231,11 +231,22 @@ $.when(
         </div>
       </div>
     `)
-    var title = 'title'
-    var url = 'https://tomato.today'
-    var text = 'text'
-    addResource(title, url, text).done(function(isSuccess) {
-      //alert('success')
+    $('.tomato-resource-form').on('submit', function(e){
+      e.preventDefault()
+      var title = $('.tomato-resource-form input[name=title]').val()
+      var url = $('.tomato-resource-form input[name=url]').val()
+      var description = $('.tomato-resource-form input[name=description]').val()
+      if (title === '') {
+        alert('请填写标题')
+        return false
+      }
+      if (url === '' && description === '') {
+        alert('请填写链接或文字')
+        return false
+      }
+      addResource(title, url, description).done(function(isSuccess) {
+        window.location.reload()
+      })
     })
 
   })
