@@ -244,6 +244,9 @@ $.when(
         alert('请填写链接或文字')
         return false
       }
+      var $save = $('.tomato-resource-form input[name=save]')
+      $save.val('保存中...')
+      $save.attr('disabled', 'disabled')
       addResource(title, url, description).done(function(isSuccess) {
         window.location.reload()
       })
