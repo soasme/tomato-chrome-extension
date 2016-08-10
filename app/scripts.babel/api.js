@@ -32,13 +32,18 @@ function getResourcesByISBN(isbn, filter, limit) {
 
 function voteResource(resourceId) {
   var dfd = jQuery.Deferred()
-  sendMessage({
+  chrome.runtime.sendMessage({
     action: 'voteResource',
     payload: {
       resourceId: resourceId
     }
   }, function(response) {
-    dfd.resolve(true)
+    console.log(response)
+    if (response.message == 'OK') {
+      dfd.resolve(true)
+    } else {
+      dfd.reject(response.message)
+    }
   })
   return dfd.promise()
 }
