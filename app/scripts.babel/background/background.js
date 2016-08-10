@@ -8,20 +8,37 @@ chrome.tabs.onUpdated.addListener(tabId => {
 
 console.log('\'Allo \'Allo! Event Page for Page Action');
 
+
+
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   console.debug("receive", request)
   switch(request.action){
     case "addResource":
-      var github = new OAuth2('github', {
-        client_id: '09450dfdc3ae76768b08',
-        client_secret: '8ecfc23e0dba1ce1a295fbabc01fa71db4b80261',
-        api_scope: 'resource:read,resource:write',
+    case "voteResource":
+      var url = 'http://127.0.0.1:8000/oauth2/authorize?client_secret=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&client_id=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&response_type=code&scope=read%20write&redirect_uri=' + encodeURI(chrome.identity.getRedirectURL("provider_cb"));
+      console.log(url)
+      chrome.identity.launchWebAuthFlow({
+        'interactive': true,
+        'url':  url
+      }, function(token) {
+        // Use the token.
+        console.log(token)
       });
+
+      break
+
+    case "fetchUserResources":
+    case "fetchHotResources":
+    case "fetchLatestResources":
+    case "logout":
+      tomato.clearAccessToken()
       sendResponse({
-        status: "success"
+        status: 'success',
       })
       break
-    case "storeToken":
-      break
+    default:
+      sendResponse({
+        status: 'unknown'
+      })
   }
 })
