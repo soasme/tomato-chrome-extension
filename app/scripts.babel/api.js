@@ -4,7 +4,8 @@ var ENV = {
   // fixture: true,
   fixture: false,
 
-  // remote: 'http://127.0.0.1:8000',
+  // remote: 'https://tomato.today',
+  remote: 'http://127.0.0.1:8000',
 
   // needAuthorization: false,
   needAuthorization: true,
@@ -31,13 +32,33 @@ function getResourcesByISBN(isbn, filter, limit) {
 
 function voteResource(resourceId) {
   var dfd = jQuery.Deferred()
-  dfd.resolve(true)
+  sendMessage({
+    action: 'voteResource',
+    payload: {
+      resourceId: resourceId
+    }
+  }, function(response) {
+    dfd.resolve(true)
+  })
   return dfd.promise()
 }
 
-function addResource(title, url, text) {
+function addResource(title, url, description) {
   var dfd = jQuery.Deferred()
-  dfd.resolve(true)
+  if (ENV.fixture) {
+    dfd.resolve(true)
+  } else {
+    sendMessage({
+      type: 'addResource',
+      payload: {
+        title: title,
+        url: url,
+        description: description
+      }
+    }, function(response) {
+      dfd.resolve(true)
+    })
+  }
   return dfd.promise()
 }
 
