@@ -152,7 +152,7 @@ $.when(
   getResourcesByISBN(isbn, 'latest', 5),
   getResourcesByISBN(isbn, 'hot', 5),
   getResourcesByISBN(isbn, 'user', 5)
-).done(function(
+).then(function(
   latestResources,
   hotResources,
   userResources
