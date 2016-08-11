@@ -11,18 +11,43 @@ var ENV = {
   needAuthorization: true,
 }
 
+function getSubjectIdByISBN(isbn) {
+  var dfd = $.Deferred()
+  var tomatoMaps = window.localStorage.getItem('tomato-maps')
+  if (!tomatoMaps || tomatoMaps === undefined) {
+    window.localStorage.setItem('tomato-maps', JSON.stringify({}))
+  } else {
+    tomatoMaps = JSON.parse(tomatoMaps)
+  }
+  sendMessage({
+    action: "getSubjectIdByISBN",
+    payload: {isbn: isbn}
+  }, function(response) {
+    if (response.existed) {
+      tomatoMaps[isbn] = response.id
+      window.localStorage.setItem('tomato-maps', JSON.stringify(tomatoMaps))
+      dfd.resolve(response.id)
+    } else {
+      dfd.reject(response.message)
+    }
+  })
+  return dfd.promise()
+}
+
 function getResourcesByISBN(isbn, filter, limit) {
   var dfd = jQuery.Deferred();
   if (filter === 'user' || filter === 'hot' || filter === 'latest') {
-    sendMessage({
-      action: 'fetchUserResources',
-      payload: {isbn: isbn}
-    }, function(response) {
-      if (response.fetched) {
-        dfd.resolve(response.resources)
-      } else {
-        dfd.resolve([])
-      }
+    getSubjectIdByISBN(isbn).then(function(id) {
+      sendMessage({
+        action: 'fetchUserResources',
+        payload: {isbn: isbn}
+      }, function(response) {
+        if (response.fetched) {
+          dfd.resolve(response.resources)
+        } else {
+          dfd.resolve([])
+        }
+      })
     })
   } else {
     dfd.reject('unknownFilter')
