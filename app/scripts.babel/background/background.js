@@ -49,17 +49,25 @@ function getAuthToken() {
 }
 
 function getSubjectIdByISBN(isbn) {
+  var dfd = $.Deferred()
   if (!ENV.remote) {
-    var dfd = $.Deferred()
-    dfd.resolve({id: 1})
-    return dfd.promise()
+    dfd.resolve(1)
   } else {
     return $.ajax({
       method: 'GET',
       url: `http://${ ENV.remote }/api/1/isbn/${ isbn }`,
       dataType: 'json',
+    }).done(function(data, status, xhr) {
+      if (xhr.status === 200) {
+        dfd.resolve(data.id)
+      } else {
+        dfd.reject(data.message)
+      }
+    }).fail(function(xhr) {
+      dfd.reject('requestFailed')
     })
   }
+  return dfd.promise()
 }
 
 function addResource(token, subjectId, title, url, description) {
@@ -125,14 +133,10 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     case "getSubjectIdByISBN":
       $.when(
         getSubjectIdByISBN(request.payload.isbn)
-      ).done(function(data, status, xhr) {
-        if (xhr.status == 200) {
-          sendResponse({message: 'OK', existed: true, id: data.id})
-        } else {
-          sendResponse({message: data.message, existed: false})
-        }
-      }).fail(function(xhr) {
-        sendResponse({message: 'requestFailed', existed: undefined})
+      ).done(function(id) {
+        sendResponse({message: 'OK', existed: true, id: id})
+      }).fail(function(message) {
+        sendResponse({message: message, existed: false})
       })
       return true
 
