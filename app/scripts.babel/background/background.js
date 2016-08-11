@@ -25,7 +25,7 @@ function getAuthToken() {
       dfd.resolve(storage.token)
     } else {
       console.debug('tomato', 'lauching web auth flow')
-      var url = 'http://127.0.0.1:8000/oauth2/authorize?client_secret=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&client_id=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&response_type=code&scope=read%20write&redirect_uri=' + encodeURI(chrome.identity.getRedirectURL("provider_cb"));
+      var url = 'http://${ ENV.remote }/oauth2/authorize?client_secret=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&client_id=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&response_type=code&scope=read%20write&redirect_uri=' + encodeURI(chrome.identity.getRedirectURL("provider_cb"));
       chrome.identity.launchWebAuthFlow({
         'interactive': true,
         'url':  url
