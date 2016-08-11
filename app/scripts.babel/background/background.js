@@ -63,7 +63,8 @@ function getSubjectIdByISBN(isbn) {
 }
 
 function addResource(token, subjectId, title, url, description) {
-  return $.ajax({
+  var dfd = $.Deferred()
+  $.ajax({
     method: 'POST',
     url: `http://127.0.0.1:8000/api/1/subjects/${ subjectId }/resources`,
     dataType: 'json',
@@ -76,17 +77,27 @@ function addResource(token, subjectId, title, url, description) {
       'Authorization': `Bearer ${ token }`,
       'Content-Type':'application/json'
     }
+  }).done(function(data, status, xhr) {
+    if (xhr.status == 200) {
+      dfd.resolve(data.id)
+    } else {
+      dfd.reject(data.message)
+    }
+  }).fail(function(xhr) {
+    dfd.reject('requestFailed')
   })
+  return dfd.promise()
 }
 
 function voteResource(token, resourceId) {
   var dfd = $.Deferred()
   if (!ENV.remote) {
     dfd.resolve(true)
+    // dfd.reject('UncommentToTestVoteFailed')
   } else {
     $.ajax({
       method: 'PUT',
-      url: `http://127.0.0.1:8000/api/1/resources/${ resourceId }/vote`,
+      url: `http://${ ENV.remote }/api/1/resources/${ resourceId }/vote`,
       dataType: 'json',
       headers: {
         'Authorization': `Bearer ${ token }`,
@@ -132,14 +143,10 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
                            request.payload.title,
                            request.payload.url,
                            request.payload.description)
-      }).done(function(data, status, xhr) {
-        if (xhr.status == 200) {
-          sendResponse({message: 'OK', created: true, id: data.id})
-        } else {
-          sendResponse({message: data.message, created: false})
-        }
-      }).fail(function(xhr) {
-        sendResponse({message: 'requestFailed', created: undefined})
+      }).done(function(id) {
+        sendResponse({message: 'OK', created: true, id: id})
+      }).fail(function(message) {
+        sendResponse({message: message, created: false})
       })
       return true
 
@@ -147,9 +154,9 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       $.when(getAuthToken()).then(function(token) {
         return voteResource(token, request.payload.resourceId)
       }).done(function() {
-        sendResponse({message: 'OK'})
+        sendResponse({message: 'OK', voted: true})
       }).fail(function(message) {
-        sendResponse({message: message})
+        sendResponse({message: message, voted: false})
       })
       return true
 
