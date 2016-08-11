@@ -195,10 +195,14 @@ $.when(
   $(".vote-resource").on('click', function(e) {
     var $this = $(e.target)
     var resourceID = $this.data('resource-id')
-    voteResource(resourceID).done(function(voted) {
-      if (voted) {
-        $this.parent().append($("<span>已投票</span>"))
-        $this.remove()
+    voteResource(resourceID).done(function() {
+      $this.parent().append($("<span>已投票</span>"))
+      $this.remove()
+    }).fail(function(reason) {
+      if (reason == 'requestFailed') {
+        alert('投票失败，可能网络不太好')
+      } else {
+        alert('投票失败')
       }
     })
   })
