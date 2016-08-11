@@ -125,7 +125,7 @@ function voteResource(token, resourceId) {
   return dfd.promise()
 }
 
-function fetchUserResourses(token, subjectId) {
+function fetchUserResources(token, subjectId) {
   var dfd = $.Deferred()
   if (!ENV.remote) {
     dfd.resolve([
@@ -205,6 +205,18 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       return true
 
     case "fetchUserResources":
+      $.when(
+        getAuthToken()
+      ).then((token) => {
+        return fetchUserResources(token, request.payload.subjectId)
+      }, (message) => {
+        sendResponse({message: message, fetched: false})
+      }).then((data) => {
+        sendResponse({message: 'OK', fetched: true, resources: data})
+      }, (message) => {
+        sendResponse({message: message, fetched: false})
+      })
+      return true
     case "fetchHotResources":
     case "fetchLatestResources":
     case "logout":
