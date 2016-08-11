@@ -202,7 +202,7 @@ $.when(
       if (reason == 'requestFailed') {
         alert('投票失败，可能网络不太好')
       } else {
-        alert('投票失败')
+        alert(`投票失败: ${ reason }`)
       }
     })
   })
