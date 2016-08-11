@@ -38,8 +38,7 @@ function voteResource(resourceId) {
       resourceId: resourceId
     }
   }, function(response) {
-    console.log(response)
-    if (response.message == 'OK') {
+    if (response.voted) {
       dfd.resolve(true)
     } else {
       dfd.reject(response.message)
