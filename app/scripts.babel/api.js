@@ -13,20 +13,20 @@ var ENV = {
 
 function getResourcesByISBN(isbn, filter, limit) {
   var dfd = jQuery.Deferred();
-  dfd.resolve([
-    {
-      'id': 1,
-      'title': 'This is mocking data.',
-      'url': 'https://tomato.today',
-      'description': '老年人之间的小春日和，长情相伴，春种秋收。',
-      'created_at': '2016-07-06',
-      "votes_count": 10,
-      'user': {
-        'username': 'soasme',
-        'url': 'https://tomato.today/users/1/',
+  if (filter === 'user' || filter === 'hot' || filter === 'latest') {
+    sendMessage({
+      action: 'fetchUserResources',
+      payload: {isbn: isbn}
+    }, function(response) {
+      if (response.fetched) {
+        dfd.resolve(response.resources)
+      } else {
+        dfd.resolve([])
       }
-    }
-  ])
+    })
+  } else {
+    dfd.reject('unknownFilter')
+  }
   return dfd.promise();
 }
 
