@@ -56,7 +56,7 @@ function getSubjectIdByISBN(isbn) {
   } else {
     return $.ajax({
       method: 'GET',
-      url: `http://127.0.0.1:8000/api/1/isbn/${ isbn }`,
+      url: `http://${ ENV.remote }/api/1/isbn/${ isbn }`,
       dataType: 'json',
     })
   }
@@ -66,7 +66,7 @@ function addResource(token, subjectId, title, url, description) {
   var dfd = $.Deferred()
   $.ajax({
     method: 'POST',
-    url: `http://127.0.0.1:8000/api/1/subjects/${ subjectId }/resources`,
+    url: `http://${ ENV.remote }/api/1/subjects/${ subjectId }/resources`,
     dataType: 'json',
     data: JSON.stringify({
       title: title,
