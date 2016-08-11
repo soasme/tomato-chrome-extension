@@ -40,26 +40,98 @@ function getAuthToken() {
   return dfd.promise()
 }
 
+function getSubjectIdByISBN(isbn) {
+  return $.ajax({
+    method: 'GET',
+    url: `http://127.0.0.1:8000/api/1/isbn/${ isbn }`,
+    dataType: 'json',
+  })
+}
+
+function addResource(token, subjectId, title, url, description) {
+  return $.ajax({
+    method: 'POST',
+    url: `http://127.0.0.1:8000/api/1/subjects/${ subjectId }/resources`,
+    dataType: 'json',
+    data: JSON.stringify({
+      title: title,
+      url: url,
+      description: description
+    }),
+    headers: {
+      'Authorization': `Bearer ${ token }`,
+      'Content-Type':'application/json'
+    }
+  })
+}
+
+function voteResource(token, resourceId) {
+  return $.ajax({
+    method: 'PUT',
+    url: `http://127.0.0.1:8000/api/1/resources/${ resourceId }/vote`,
+    dataType: 'json',
+    headers: {
+      'Authorization': `Bearer ${ token }`,
+      'Content-Type':'application/json'
+    }
+  })
+}
+
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
   console.debug("receive", request)
 
   switch(request.action){
-    case "addResource":
-    case "voteResource":
-      $.when(getAuthToken()).then(function(token) {
-        var response = {message: 'OK'}
-        console.log('tomato', 'vote resource', response, token)
-        sendResponse(response)
+    case "getSubjectIdByISBN":
+      $.when(
+        getSubjectIdByISBN(request.payload.isbn)
+      ).done(function(data, status, xhr) {
+        if (xhr.status == 200) {
+          sendResponse({message: 'OK', existed: true, id: data.id})
+        } else {
+          sendResponse({message: data.message, existed: false})
+        }
+      }).fail(function(xhr) {
+        sendResponse({message: 'requestFailed', existed: undefined})
       })
       return true
-      break
+
+    case "addResource":
+      $.when(getAuthToken()).then(function(token) {
+        return addResource(token,
+                           request.payload,subjectId,
+                           request.payload.title,
+                           request.payload.url,
+                           request.payload.description)
+      }).done(function(data, status, xhr) {
+        if (xhr.status == 200) {
+          sendResponse({message: 'OK', created: true, id: data.id})
+        } else {
+          sendResponse({message: data.message, created: false})
+        }
+      }).fail(function(xhr) {
+        sendResponse({message: 'requestFailed', created: undefined})
+      })
+      return true
+
+    case "voteResource":
+      $.when(getAuthToken()).then(function(token) {
+        return voteResource(token, request.payload.resourceId)
+      }).done(function(data, status, xhr) {
+        if (xhr.status == 204) {
+          sendResponse({message: 'OK', voted: true})
+        } else {
+          sendResponse({message: data.message, voted: false})
+        }
+      }).fail(function(xhr) {
+          sendResponse({message: 'requestFailed', voted: undefined})
+      })
+      return true
 
     case "fetchUserResources":
     case "fetchHotResources":
     case "fetchLatestResources":
     case "logout":
-      tomato.clearAccessToken()
       sendResponse({
         status: 'success',
       })
@@ -68,5 +140,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       sendResponse({
         status: 'unknown'
       })
+
   }
 })
