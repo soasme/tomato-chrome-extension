@@ -173,7 +173,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         getSubjectIdByISBN(request.payload.isbn)
       ).then(function(id) {
         sendResponse({message: 'OK', existed: true, id: id})
-      }, (function(message) {
+      }, function(message) {
         sendResponse({message: message, existed: false})
       })
       return true
@@ -193,11 +193,13 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       return true
 
     case "voteResource":
-      $.when(getAuthToken()).then(function(token) {
+      $.when(
+        getAuthToken()
+      ).then((token) => {
         return voteResource(token, request.payload.resourceId)
-      }).done(function() {
+      }).done(() => {
         sendResponse({message: 'OK', voted: true})
-      }).fail(function(message) {
+      }).fail((message) => {
         sendResponse({message: message, voted: false})
       })
       return true
