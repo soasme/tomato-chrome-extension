@@ -125,6 +125,44 @@ function voteResource(token, resourceId) {
   return dfd.promise()
 }
 
+function fetchUserResourses(token, subjectId) {
+  var dfd = $.Deferred()
+  if (!ENV.remote) {
+    dfd.resolve([
+      {
+        'id': 1,
+        'title': 'This is mocking data.',
+        'url': 'https://tomato.today',
+        'description': '老年人之间的小春日和，长情相伴，春种秋收。',
+        'created_at': '2016-07-06',
+        "votes_count": 10,
+        'user': {
+          'username': 'soasme',
+          'url': 'https://tomato.today/users/1/',
+        }
+      }
+    ])
+  } else {
+    return $.ajax({
+      method: 'GET',
+      url: `http://${ ENV.remote }/api/1/users/resources?limit=5`,
+      dataType: 'json',
+      headers: {
+        'Authorization': `Bearer ${ token }`
+      }
+    }).done(function(data, status, xhr) {
+      if (xhr.status === 200) {
+        dfd.resolve(data)
+      } else {
+        dfd.reject(data.message)
+      }
+    }).fail(function(xhr) {
+      dfd.reject('requestFailed')
+    })
+  }
+  return dfd.promise()
+}
+
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
   console.debug("receive", request)
@@ -133,9 +171,9 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     case "getSubjectIdByISBN":
       $.when(
         getSubjectIdByISBN(request.payload.isbn)
-      ).done(function(id) {
+      ).then(function(id) {
         sendResponse({message: 'OK', existed: true, id: id})
-      }).fail(function(message) {
+      }, (function(message) {
         sendResponse({message: message, existed: false})
       })
       return true
