@@ -34,24 +34,31 @@ function getSubjectIdByISBN(isbn) {
   return dfd.promise()
 }
 
-function getResourcesByISBN(isbn, filter, limit) {
+function getResourcesByISBN(isbn, type, sort, limit) {
   var dfd = jQuery.Deferred();
-  if (filter === 'user' || filter === 'hot' || filter === 'latest') {
-    getSubjectIdByISBN(isbn).then(function(id) {
-      sendMessage({
-        action: 'fetchUserResources',
-        payload: {isbn: isbn}
-      }, function(response) {
-        if (response.fetched) {
-          dfd.resolve(response.resources)
-        } else {
-          dfd.resolve([])
-        }
-      })
-    })
-  } else {
-    dfd.reject('unknownFilter')
+
+  var action = 'fetchUserResources';
+  if (type === 'user') {
+    action = 'fetchUserResources'
+  } else if (type === 'hot') {
+    action = 'fetchHotResources'
+  } else if (type === 'latest') {
+    action = 'fetchLatestResources'
   }
+
+  getSubjectIdByISBN(isbn).then(function(id) {
+    sendMessage({
+      action: action,
+      payload: {isbn: isbn}
+    }, function(response) {
+      if (response.fetched) {
+        dfd.resolve(response.resources)
+      } else {
+        dfd.resolve([])
+      }
+    })
+  })
+
   return dfd.promise();
 }
 
