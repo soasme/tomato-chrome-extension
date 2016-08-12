@@ -8,15 +8,17 @@ chrome.runtime.onInstalled.addListener(details => {
   console.log('previousVersion', details.previousVersion);
 });
 
-function getAuthToken() {
+function getAuthToken(config) {
   var dfd = jQuery.Deferred()
+  var config = config === undefined ? {} : config
+  var required = config.required || false
   var token = chrome.storage.local.get(null, function(storage) {
     console.log('tomato', 'storage', storage)
     if (!ENV.remote) {
       dfd.resolve('THIS_IS_MOCK_TOKEN')
-    } else if (storage.token) {
+    } else if (storage.token || !required) {
       console.debug('tomato', 'using token in storage', storage.token)
-      dfd.resolve(storage.token)
+      dfd.resolve(storage.token || null)
     } else {
       console.debug('tomato', 'lauching web auth flow')
       var url = '${ ENV.remote }/oauth2/authorize?client_secret=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&client_id=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&response_type=code&scope=read%20write&redirect_uri=' + encodeURI(chrome.identity.getRedirectURL("provider_cb"));
@@ -190,7 +192,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
     case "voteResource":
       $.when(
-        getAuthToken()
+        getAuthToken({required: true})
       ).then((token) => {
         return voteResource(token, request.payload.resourceId)
       }).done(() => {
@@ -202,7 +204,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
     case "fetchUserResources":
       $.when(
-        getAuthToken()
+        getAuthToken({required: false})
       ).then((token) => {
         return fetchResources(token, request.payload.subjectId, 'user')
       }, (message) => {
@@ -215,7 +217,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       return true
     case "fetchHotResources":
       $.when(
-        getAuthToken()
+        getAuthToken({required: false})
       ).then((token) => {
         return fetchResources(token, request.payload.subjectId, '', 'votes_count')
       }, (message) => {
@@ -228,7 +230,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       return true
     case "fetchLatestResources":
       $.when(
-        getAuthToken()
+        getAuthToken({required: false})
       ).then((token) => {
         return fetchResources(token, request.payload.subjectId, '', 'created_at')
       }, (message) => {
