@@ -119,7 +119,7 @@ function voteResource(token, resourceId) {
   return dfd.promise()
 }
 
-function fetchUserResources(token, subjectId) {
+function fetchResources(token, subjectId, filter, sort) {
   var dfd = $.Deferred()
   if (!ENV.remote) {
     dfd.resolve([
@@ -137,9 +137,11 @@ function fetchUserResources(token, subjectId) {
       }
     ])
   } else {
+    var filter = filter === undefined ? '' : filter
+    var sort = sort === undefined ? 'created_at' : sort
     return $.ajax({
       method: 'GET',
-      url: `${ ENV.remote }/api/1/users/resources?limit=5`,
+      url: `${ ENV.remote }/api/1/resources?limit=5&filter=${ filter }&sort=${ sort }`,
       dataType: 'json',
       headers: {
         'Authorization': `Bearer ${ token }`
@@ -202,7 +204,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       $.when(
         getAuthToken()
       ).then((token) => {
-        return fetchUserResources(token, request.payload.subjectId)
+        return fetchResources(token, request.payload.subjectId, 'user')
       }, (message) => {
         sendResponse({message: message, fetched: false})
       }).then((data) => {
@@ -212,15 +214,41 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       })
       return true
     case "fetchHotResources":
-    case "fetchLatestResources":
-    case "logout":
-      sendResponse({
-        status: 'success',
+      $.when(
+        getAuthToken()
+      ).then((token) => {
+        return fetchResources(token, request.payload.subjectId, '', 'votes_count')
+      }, (message) => {
+        sendResponse({message: message, fetched: false})
+      }).then((data) => {
+        sendResponse({message: 'OK', fetched: true, resources: data})
+      }, (message) => {
+        sendResponse({message: message, fetched: false})
       })
-      break
+      return true
+    case "fetchLatestResources":
+      $.when(
+        getAuthToken()
+      ).then((token) => {
+        return fetchResources(token, request.payload.subjectId, '', 'created_at')
+      }, (message) => {
+        sendResponse({message: message, fetched: false})
+      }).then((data) => {
+        sendResponse({message: 'OK', fetched: true, resources: data})
+      }, (message) => {
+        sendResponse({message: message, fetched: false})
+      })
+      return true
+    case "logout":
+      chrome.storage.local.remove(['token'], function(storage) {
+        sendResponse({
+          message: 'success',
+        })
+      })
+      return true
     default:
       sendResponse({
-        status: 'unknown'
+        message: 'unknownAction'
       })
 
   }
