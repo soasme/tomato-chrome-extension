@@ -253,7 +253,7 @@ $.when(
       $save.attr('disabled', 'disabled')
       addResource(title, url, description).then(
         window.location.reload,
-        function(message){ alert(message)}
+        function(message){ alert(message) }
       )
     })
 
