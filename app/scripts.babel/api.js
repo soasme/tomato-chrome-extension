@@ -19,14 +19,15 @@ function getSubjectIdByISBN(isbn) {
   } else {
     tomatoMaps = JSON.parse(tomatoMaps)
   }
+  tomatoMaps = tomatoMaps || {}
   sendMessage({
     action: "getSubjectIdByISBN",
     payload: {isbn: isbn}
   }, function(response) {
     if (response.existed) {
-      tomatoMaps[isbn] = response.id
+      tomatoMaps[isbn] = response.subject.id
       window.sessionStorage.setItem('tomato-maps', JSON.stringify(tomatoMaps))
-      dfd.resolve(response.id)
+      dfd.resolve(response.subject)
     } else {
       dfd.reject(response.message)
     }
@@ -46,10 +47,10 @@ function getResourcesByISBN(isbn, type, sort, limit) {
     action = 'fetchLatestResources'
   }
 
-  getSubjectIdByISBN(isbn).then(function(id) {
+  getSubjectIdByISBN(isbn).then(function(subject) {
     sendMessage({
       action: action,
-      payload: {subjectId: id}
+      payload: {subjectId: subject.id}
     }, function(response) {
       if (response.fetched) {
         dfd.resolve(response.resources)
@@ -60,6 +61,20 @@ function getResourcesByISBN(isbn, type, sort, limit) {
   })
 
   return dfd.promise();
+}
+
+function requireLogin() {
+  var dfd = jQuery.Deferred()
+  chrome.runtime.sendMessage({
+    action: 'login'
+  }, function(response) {
+    if (response.token) {
+      dfd.resolve(response.token)
+    } else {
+      dfd.reject(response.message)
+    }
+  })
+  return dfd.promise()
 }
 
 function voteResource(resourceId) {
