@@ -85,7 +85,11 @@ function addResource(title, url, description) {
         description: description
       }
     }, function(response) {
-      dfd.resolve(true)
+      if (response.created) {
+        dfd.resolve(true)
+      } else {
+        dfd.reject(response.message)
+      }
     })
   }
   return dfd.promise()
