@@ -1,6 +1,6 @@
 var ENV = {
-  remote: null,
-  // remote: 'http://127.0.0.1:8000',
+  // remote: null,
+  remote: 'http://127.0.0.1:8000',
   // remote: 'https://tomato.today',
 }
 
@@ -10,7 +10,7 @@ chrome.runtime.onInstalled.addListener(details => {
 
 function getAuthToken(config) {
   var dfd = jQuery.Deferred()
-  var config = config === undefined ? {} : config
+  var config = config || {}
   var required = config.required || false
   var token = chrome.storage.local.get(null, function(storage) {
     console.log('tomato', 'storage', storage)
@@ -166,6 +166,12 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   console.debug("receive", request)
 
   switch(request.action){
+    case "login":
+      getAuthToken({required: true}).then(
+        (token) => { sendResponse({ message: "OK", loggedIn: true, token: token}) },
+        (message) => { sendResponse({ message: "OK", loggedIn: false}) }
+      )
+      return true
     case "getSubjectIdByISBN":
       $.when(
         getSubjectIdByISBN(request.payload.isbn)
@@ -245,6 +251,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       chrome.storage.local.remove(['token'], function(storage) {
         sendResponse({
           message: 'success',
+          loggedOut: true
         })
       })
       return true
