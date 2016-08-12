@@ -8,12 +8,6 @@ chrome.runtime.onInstalled.addListener(details => {
   console.log('previousVersion', details.previousVersion);
 });
 
-chrome.tabs.onUpdated.addListener(tabId => {
-  chrome.pageAction.show(tabId);
-});
-
-console.log('\'Allo \'Allo! Event Page for Page Action');
-
 function getAuthToken() {
   var dfd = jQuery.Deferred()
   var token = chrome.storage.local.get(null, function(storage) {
@@ -25,7 +19,7 @@ function getAuthToken() {
       dfd.resolve(storage.token)
     } else {
       console.debug('tomato', 'lauching web auth flow')
-      var url = 'http://${ ENV.remote }/oauth2/authorize?client_secret=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&client_id=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&response_type=code&scope=read%20write&redirect_uri=' + encodeURI(chrome.identity.getRedirectURL("provider_cb"));
+      var url = '${ ENV.remote }/oauth2/authorize?client_secret=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&client_id=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&response_type=code&scope=read%20write&redirect_uri=' + encodeURI(chrome.identity.getRedirectURL("provider_cb"));
       chrome.identity.launchWebAuthFlow({
         'interactive': true,
         'url':  url
@@ -55,7 +49,7 @@ function getSubjectIdByISBN(isbn) {
   } else {
     return $.ajax({
       method: 'GET',
-      url: `http://${ ENV.remote }/api/1/isbn/${ isbn }`,
+      url: `${ ENV.remote }/api/1/isbn/${ isbn }`,
       dataType: 'json',
     }).done(function(data, status, xhr) {
       if (xhr.status === 200) {
@@ -74,7 +68,7 @@ function addResource(token, subjectId, title, url, description) {
   var dfd = $.Deferred()
   $.ajax({
     method: 'POST',
-    url: `http://${ ENV.remote }/api/1/subjects/${ subjectId }/resources`,
+    url: `${ ENV.remote }/api/1/subjects/${ subjectId }/resources`,
     dataType: 'json',
     data: JSON.stringify({
       title: title,
@@ -105,7 +99,7 @@ function voteResource(token, resourceId) {
   } else {
     $.ajax({
       method: 'PUT',
-      url: `http://${ ENV.remote }/api/1/resources/${ resourceId }/vote`,
+      url: `${ ENV.remote }/api/1/resources/${ resourceId }/vote`,
       dataType: 'json',
       headers: {
         'Authorization': `Bearer ${ token }`,
@@ -145,7 +139,7 @@ function fetchUserResources(token, subjectId) {
   } else {
     return $.ajax({
       method: 'GET',
-      url: `http://${ ENV.remote }/api/1/users/resources?limit=5`,
+      url: `${ ENV.remote }/api/1/users/resources?limit=5`,
       dataType: 'json',
       headers: {
         'Authorization': `Bearer ${ token }`
