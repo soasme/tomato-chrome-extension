@@ -13,9 +13,9 @@ var ENV = {
 
 function getSubjectIdByISBN(isbn) {
   var dfd = $.Deferred()
-  var tomatoMaps = window.localStorage.getItem('tomato-maps')
+  var tomatoMaps = window.sessionStorage.getItem('tomato-maps')
   if (!tomatoMaps || tomatoMaps === undefined) {
-    window.localStorage.setItem('tomato-maps', JSON.stringify({}))
+    window.sessionStorage.setItem('tomato-maps', JSON.stringify({}))
   } else {
     tomatoMaps = JSON.parse(tomatoMaps)
   }
@@ -25,7 +25,7 @@ function getSubjectIdByISBN(isbn) {
   }, function(response) {
     if (response.existed) {
       tomatoMaps[isbn] = response.id
-      window.localStorage.setItem('tomato-maps', JSON.stringify(tomatoMaps))
+      window.sessionStorage.setItem('tomato-maps', JSON.stringify(tomatoMaps))
       dfd.resolve(response.id)
     } else {
       dfd.reject(response.message)
