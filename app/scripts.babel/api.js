@@ -49,7 +49,7 @@ function getResourcesByISBN(isbn, type, sort, limit) {
   getSubjectIdByISBN(isbn).then(function(id) {
     sendMessage({
       action: action,
-      payload: {isbn: isbn}
+      payload: {subjectId: id}
     }, function(response) {
       if (response.fetched) {
         dfd.resolve(response.resources)
