@@ -73,9 +73,10 @@ function addResource(token, subjectId, title, url, description) {
   var dfd = $.Deferred()
   $.ajax({
     method: 'POST',
-    url: `${ ENV.remote }/api/1/subjects/${ subjectId }/resources/`,
+    url: `${ ENV.remote }/api/1/resources/`,
     dataType: 'json',
     data: JSON.stringify({
+      subject_id: subjectId,
       title: title,
       url: url,
       description: description
