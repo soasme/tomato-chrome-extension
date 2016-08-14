@@ -94,24 +94,27 @@ function voteResource(resourceId) {
   return dfd.promise()
 }
 
-function addResource(title, url, description) {
+function addResource(isbn, title, url, description) {
   var dfd = jQuery.Deferred()
   if (ENV.fixture) {
     dfd.resolve(true)
   } else {
-    sendMessage({
-      type: 'addResource',
-      payload: {
-        title: title,
-        url: url,
-        description: description
-      }
-    }, function(response) {
-      if (response.created) {
-        dfd.resolve(true)
-      } else {
-        dfd.reject(response.message)
-      }
+    getSubjectIdByISBN(isbn).then((subject) => {
+      sendMessage({
+        action: 'addResource',
+        payload: {
+          title: title,
+          url: url,
+          description: description,
+          subjectId: subject.id
+        }
+      }, (response) => {
+        if (response.created) {
+          dfd.resolve(true)
+        } else {
+          dfd.reject(response.message)
+        }
+      })
     })
   }
   return dfd.promise()
