@@ -252,7 +252,7 @@ requireLogin().then(() => {
         var $save = $('.tomato-resource-form input[name=save]')
         $save.val('保存中...')
         $save.attr('disabled', 'disabled')
-        addResource(title, url, description).then(
+        addResource(isbn, title, url, description).then(
           window.location.reload,
           function(message){ alert(message) }
         )
