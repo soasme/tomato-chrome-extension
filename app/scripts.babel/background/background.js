@@ -153,7 +153,7 @@ function voteResource(token, resourceId) {
   return dfd.promise()
 }
 
-function fetchResources(token, subjectId, filter, sort) {
+function fetchResources(token, subjectId, filter, sort, user) {
   var dfd = $.Deferred()
   if (!ENV.remote) {
     dfd.resolve([
@@ -173,9 +173,10 @@ function fetchResources(token, subjectId, filter, sort) {
   } else {
     var filter = filter === undefined ? '' : filter
     var sort = sort === undefined ? 'created_at' : sort
+    var user = user === undefined ? '' : user.username
     return $.ajax({
       method: 'GET',
-      url: `${ ENV.remote }/api/1/resources/?limit=5&subject_id=${ subjectId }&filter=${ filter }&ordering=${ sort }`,
+      url: `${ ENV.remote }/api/1/resources/?limit=5&subject_id=${ subjectId }&owner=${ user }&ordering=${ sort }`,
       dataType: 'json',
       headers: {
         'Authorization': `Bearer ${ token }`
@@ -257,7 +258,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       $.when(
         getAuthToken({required: false})
       ).then((token) => {
-        return fetchResources(token, request.payload.subjectId, 'user', '-created_at')
+        return fetchResources(token, request.payload.subjectId, 'user', '-created_at', request.payload.user)
       }, (message) => {
         sendResponse({message: message, fetched: false})
       }).then((data) => {
