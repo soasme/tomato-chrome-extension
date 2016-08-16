@@ -153,11 +153,11 @@ var isbn = isbnMatch[1]
 getUserInfo().then(
 
   // for login user
-  (user) => {
+  function (user) {
     $.when(
       getResourcesByISBN(isbn, 'latest', 5),
       getResourcesByISBN(isbn, 'hot', 5),
-      getResourcesByISBN(isbn, 'user', 5)
+      getResourcesByISBN(isbn, 'user', 5, user)
     ).then(function(
       latestResources,
       hotResources,
