@@ -114,7 +114,7 @@ var source = `
     <span>/</span>
     {{#if user}}
     <a class="short-resource-tabs " href="javascript:;" data-tab="user">@{{ user.username }}</a>
-    {{#else}}
+    {{else}}
     <a class="short-resource-tabs " href="javascript:;">登录</a>
     {{/if}}
   </div>
@@ -271,7 +271,7 @@ getUserInfo().then(
   // for anonymous user.
   (message) => {
     var data = {
-      user: null
+      user: null,
       types: [
         {
           type: 'hot',
