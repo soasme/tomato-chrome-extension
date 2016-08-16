@@ -175,7 +175,7 @@ function fetchResources(token, subjectId, filter, sort) {
     var sort = sort === undefined ? 'created_at' : sort
     return $.ajax({
       method: 'GET',
-      url: `${ ENV.remote }/api/1/subjects/${ subjectId }/resources/?limit=5&filter=${ filter }&sort=${ sort }`,
+      url: `${ ENV.remote }/api/1/resources/?limit=5&subject_id=${ subjectId }&filter=${ filter }&ordering=${ sort }`,
       dataType: 'json',
       headers: {
         'Authorization': `Bearer ${ token }`
@@ -257,7 +257,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       $.when(
         getAuthToken({required: false})
       ).then((token) => {
-        return fetchResources(token, request.payload.subjectId, 'user')
+        return fetchResources(token, request.payload.subjectId, 'user', '-created_at')
       }, (message) => {
         sendResponse({message: message, fetched: false})
       }).then((data) => {
@@ -270,7 +270,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       $.when(
         getAuthToken({required: false})
       ).then((token) => {
-        return fetchResources(token, request.payload.subjectId, '', 'votes_count')
+        return fetchResources(token, request.payload.subjectId, '', '-weight')
       }, (message) => {
         sendResponse({message: message, fetched: false})
       }).then((data) => {
@@ -283,7 +283,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       $.when(
         getAuthToken({required: false})
       ).then((token) => {
-        return fetchResources(token, request.payload.subjectId, '', 'created_at')
+        return fetchResources(token, request.payload.subjectId, '', '-created_at')
       }, (message) => {
         sendResponse({message: message, fetched: false})
       }).then((data) => {
