@@ -112,7 +112,11 @@ var source = `
     <span>/</span>
     <a class="short-resource-tabs " href="javascript:;" data-tab="latest">最新</a>
     <span>/</span>
-    <a class="short-resource-tabs " href="javascript:;" data-tab="user">自己的</a>
+    {{#if user}}
+    <a class="short-resource-tabs " href="javascript:;" data-tab="user">@{{ user.username }}</a>
+    {{#else}}
+    <a class="short-resource-tabs " href="javascript:;">登录</a>
+    {{/if}}
   </div>
 </div>
 
@@ -146,120 +150,147 @@ var template = Handlebars.compile(source)
 var isbnMatch = $(".subject #info").html().match(/(97[89]\d{9}[\dXx])/)
 var isbn = isbnMatch[1]
 
+getUserInfo().then(
 
-requireLogin().then(() => {
+  // for login user
+  (user) => {
+    $.when(
+      getResourcesByISBN(isbn, 'latest', 5),
+      getResourcesByISBN(isbn, 'hot', 5),
+      getResourcesByISBN(isbn, 'user', 5)
+    ).then(function(
+      latestResources,
+      hotResources,
+      userResources
+    ) {
+      // build template data
+      var data = {
+        user: user,
+        types: [
+          {
+            type: 'hot',
+            isShown: true,
+            resources: hotResources
+          }, {
+            type: 'latest',
+            isShown: false,
+            resources: latestResources
+          }, {
+            type: 'user',
+            isShown: false,
+            resources: userResources
+          }
+        ],
+        resourcesUrl: `https://tomato.today/isbn/${ isbn }/resources`,
+        addResourceUrl: `https://tomato.today/isbn/${ isbn }/resources`,
+      }
 
-  $.when(
-    getResourcesByISBN(isbn, 'latest', 5),
-    getResourcesByISBN(isbn, 'hot', 5),
-    getResourcesByISBN(isbn, 'user', 5)
-  ).then(function(
-    latestResources,
-    hotResources,
-    userResources
-  ) {
-    // build template data
+      // render template
+      var $el = $(template(data))
+      $el.insertAfter($("#db-tags-section"))
+
+      // init tab
+      $(".short-resource-tabs").on('click', function(e) {
+        var type = $(e.target).data('tab')
+        $(".short-resource-tabs").removeClass('on-tab')
+        $(e.target).addClass('on-tab')
+        $(".resource-list ").removeClass('show')
+        $(`.resource-list.${ type }`).addClass('show')
+      })
+
+      // init vote
+      $(".vote-resource").on('click', function(e) {
+        var $this = $(e.target)
+        var resourceID = $this.data('resource-id')
+        voteResource(resourceID).done(function() {
+          $this.parent().append($("<span>已投票</span>"))
+          $this.remove()
+        }).fail(function(reason) {
+          if (reason == 'requestFailed') {
+            alert('投票失败，可能网络不太好')
+          } else {
+            alert(`投票失败: ${ reason }`)
+          }
+        })
+      })
+
+      // init add button
+      $(".add-resource-btn").on('click', function(e) {
+        // init modal
+        show_tomato_dialog(`
+          <div>
+            <div class="indentpop1 clearfix">
+              <form class="j book-sns tomato-resource-form">
+                <div class="resource-form-hd interest-form-hd">
+                  <span class="gact rr"><a href="javascript:;" onclick="close_dialog()">x</a></span>
+                  <h2>添加番茄资源</h2>
+                </div>
+                <ul class="interest_form resource_form" id="advtags">
+                <li>标题</li>
+                <li> <input name="title" type="text" class="inp-tags"> </li>
+                <li>链接</li>
+                <li> <input name="url" type="url" class="inp-tags"> </li>
+                <li>文字</li>
+                <li>
+                  <textarea name="description" class="comment" id="description" maxlength="350"></textarea>
+                </li>
+                </ul>
+                <div id="tomato-submits">
+                  <input type="submit" value="保存" name="save">
+                </div>
+              </form>
+            </div>
+          </div>
+        `)
+        $('.tomato-resource-form').on('submit', function(e){
+          e.preventDefault()
+          var title = $('.tomato-resource-form input[name=title]').val()
+          var url = $('.tomato-resource-form input[name=url]').val()
+          var description = $('.tomato-resource-form input[name=description]').val()
+          if (title === '') {
+            alert('请填写标题')
+            return false
+          }
+          if (url === '' && description === '') {
+            alert('请填写链接或文字')
+            return false
+          }
+          var $save = $('.tomato-resource-form input[name=save]')
+          $save.val('保存中...')
+          $save.attr('disabled', 'disabled')
+          addResource(isbn, title, url, description).then(
+            window.location.reload,
+            function(message){ alert(message) }
+          )
+        })
+
+      })
+    })
+  },
+
+  // for anonymous user.
+  (message) => {
     var data = {
+      user: null
       types: [
         {
           type: 'hot',
           isShown: true,
-          resources: hotResources
+          resources: []
         }, {
           type: 'latest',
           isShown: false,
-          resources: latestResources
+          resources: []
         }, {
           type: 'user',
           isShown: false,
-          resources: userResources
+          resources: []
         }
       ],
       resourcesUrl: `https://tomato.today/isbn/${ isbn }/resources`,
       addResourceUrl: `https://tomato.today/isbn/${ isbn }/resources`,
     }
-
-    // render template
     var $el = $(template(data))
     $el.insertAfter($("#db-tags-section"))
-
-    // init tab
-    $(".short-resource-tabs").on('click', function(e) {
-      var type = $(e.target).data('tab')
-      $(".short-resource-tabs").removeClass('on-tab')
-      $(e.target).addClass('on-tab')
-      $(".resource-list ").removeClass('show')
-      $(`.resource-list.${ type }`).addClass('show')
-    })
-
-    // init vote
-    $(".vote-resource").on('click', function(e) {
-      var $this = $(e.target)
-      var resourceID = $this.data('resource-id')
-      voteResource(resourceID).done(function() {
-        $this.parent().append($("<span>已投票</span>"))
-        $this.remove()
-      }).fail(function(reason) {
-        if (reason == 'requestFailed') {
-          alert('投票失败，可能网络不太好')
-        } else {
-          alert(`投票失败: ${ reason }`)
-        }
-      })
-    })
-
-    // init add button
-    $(".add-resource-btn").on('click', function(e) {
-      // init modal
-      show_tomato_dialog(`
-        <div>
-          <div class="indentpop1 clearfix">
-            <form class="j book-sns tomato-resource-form">
-              <div class="resource-form-hd interest-form-hd">
-                <span class="gact rr"><a href="javascript:;" onclick="close_dialog()">x</a></span>
-                <h2>添加番茄资源</h2>
-              </div>
-              <ul class="interest_form resource_form" id="advtags">
-              <li>标题</li>
-              <li> <input name="title" type="text" class="inp-tags"> </li>
-              <li>链接</li>
-              <li> <input name="url" type="url" class="inp-tags"> </li>
-              <li>文字</li>
-              <li>
-                <textarea name="description" class="comment" id="description" maxlength="350"></textarea>
-              </li>
-              </ul>
-              <div id="tomato-submits">
-                <input type="submit" value="保存" name="save">
-              </div>
-            </form>
-          </div>
-        </div>
-      `)
-      $('.tomato-resource-form').on('submit', function(e){
-        e.preventDefault()
-        var title = $('.tomato-resource-form input[name=title]').val()
-        var url = $('.tomato-resource-form input[name=url]').val()
-        var description = $('.tomato-resource-form input[name=description]').val()
-        if (title === '') {
-          alert('请填写标题')
-          return false
-        }
-        if (url === '' && description === '') {
-          alert('请填写链接或文字')
-          return false
-        }
-        var $save = $('.tomato-resource-form input[name=save]')
-        $save.val('保存中...')
-        $save.attr('disabled', 'disabled')
-        addResource(isbn, title, url, description).then(
-          window.location.reload,
-          function(message){ alert(message) }
-        )
-      })
-
-    })
-  })
-
-})
-
+  }
+)
