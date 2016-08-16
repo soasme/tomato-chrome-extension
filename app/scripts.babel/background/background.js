@@ -11,6 +11,7 @@ chrome.runtime.onInstalled.addListener(details => {
 function getAuthToken(config) {
   var dfd = jQuery.Deferred()
   var config = config || {}
+  var required = config.required || false
   var token = chrome.storage.local.get(null, function(storage) {
     console.log('tomato', 'storage', storage)
     if (!ENV.remote) {
@@ -18,7 +19,7 @@ function getAuthToken(config) {
     } else if (storage.token) {
       console.debug('tomato', 'using token in storage', storage.token)
       dfd.resolve(storage.token || null)
-    } else {
+    } else if (required){
       var url = `${ ENV.remote }/oauth2/authorize/?client_secret=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&client_id=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&response_type=token&scope=resource&redirect_uri=` + encodeURI(chrome.identity.getRedirectURL("provider_cb"));
       console.debug('tomato', 'lauching web auth flow', url)
       chrome.identity.launchWebAuthFlow({
@@ -39,8 +40,35 @@ function getAuthToken(config) {
           dfd.reject(url)
         }
       });
+    } else {
+      dfd.resolve(null)
     }
   })
+  return dfd.promise()
+}
+
+function getUserInfo(token) {
+  var dfd = $.Deferred()
+  if (!ENV.remote) {
+    dfd.resolve({'username': 'testuser', 'email': 'testuser@example.org'})
+  } else {
+    $.ajax({
+      method: 'GET',
+      url: `${ ENV.remote }/api/1/user`,
+      dataType: 'json',
+      headers: {
+        'Authorization': `Bearer ${ token }`
+      }
+    }).then((data, status, xhr) => {
+      if (xhr.status === 200) {
+        dfd.resolve(data)
+      } else {
+        dfd.reject(data.detail)
+      }
+    }, (xhr) => {
+      dfd.reject('requestFailed')
+    })
+  }
   return dfd.promise()
 }
 
@@ -174,6 +202,17 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       getAuthToken({required: true}).then(
         (token) => { sendResponse({ message: "OK", loggedIn: true, token: token}) },
         (message) => { sendResponse({ message: message, loggedIn: false}) }
+      )
+      return true
+    case "getUserInfo":
+      $.when(
+        getAuthToken({required: false})
+      ).then(
+        getUserInfo,
+        (message) => { sendResponse({ message: message, fetched: false })}
+      ).then(
+        (user) => { sendResponse({ message: "OK", fetched: true, user: user})},
+        (message) => { sendResponse({ message: message, fetched: false })}
       )
       return true
     case "getSubjectIdByISBN":
