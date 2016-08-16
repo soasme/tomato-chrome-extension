@@ -128,8 +128,11 @@ var source = `
           <h3>
             <span class="resource-vote">
               <span class="vote-count">{{votes_count}}</span>
-              {{#if isVoted}}<span>已投票</span>{{/if}}
-              <a href="javascript:;" class="j vote-resource" data-resource-id="{{id}}">有用</a>
+              {{#if has_voted}}
+                <span>已投票</span>
+              {{else}}
+                <a href="javascript:;" class="j vote-resource" data-resource-id="{{id}}">有用</a>
+              {{/if}}
             </span>
             <span class="resource-info">
               <a href="{{user.url}}">{{user.username}}</a>
