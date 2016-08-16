@@ -63,6 +63,20 @@ function getResourcesByISBN(isbn, type, sort, limit) {
   return dfd.promise();
 }
 
+function getUserInfo() {
+  var dfd = jQuery.Deferred()
+  chrome.runtime.sendMessage({
+    action: "getUserInfo"
+  }, (response) => {
+    if (response.fetched) {
+      dfd.resolve(response.user)
+    } else {
+      dfd.reject(response.message)
+    }
+  })
+  return dfd.promise()
+}
+
 function requireLogin() {
   var dfd = jQuery.Deferred()
   chrome.runtime.sendMessage({
