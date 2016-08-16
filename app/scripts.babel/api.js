@@ -35,7 +35,7 @@ function getSubjectIdByISBN(isbn) {
   return dfd.promise()
 }
 
-function getResourcesByISBN(isbn, type, sort, limit) {
+function getResourcesByISBN(isbn, type, limit, user) {
   var dfd = jQuery.Deferred();
 
   var action = 'fetchUserResources';
@@ -50,7 +50,7 @@ function getResourcesByISBN(isbn, type, sort, limit) {
   getSubjectIdByISBN(isbn).then(function(subject) {
     sendMessage({
       action: action,
-      payload: {subjectId: subject.id}
+      payload: {subjectId: subject.id, user: user}
     }, function(response) {
       if (response.fetched) {
         dfd.resolve(response.resources)
