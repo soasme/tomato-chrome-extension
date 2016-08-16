@@ -173,10 +173,12 @@ function fetchResources(token, subjectId, filter, sort, user) {
   } else {
     var filter = filter === undefined ? '' : filter
     var sort = sort === undefined ? 'created_at' : sort
+    var visibility = user === undefined ? 'public' : 'all'
     var user = user === undefined ? '' : user.username
+    var url = `${ ENV.remote }/api/1/resources/?limit=5&subject_id=${ subjectId }&ordering=${ sort }&owner=${ user }&visibility=${ visibility }`
     return $.ajax({
       method: 'GET',
-      url: `${ ENV.remote }/api/1/resources/?limit=5&subject_id=${ subjectId }&owner=${ user }&ordering=${ sort }`,
+      url: url,
       dataType: 'json',
       headers: {
         'Authorization': `Bearer ${ token }`
