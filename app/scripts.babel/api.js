@@ -11,22 +11,13 @@ var ENV = {
   needAuthorization: true,
 }
 
-function getSubjectIdByISBN(isbn) {
+function getSubjectByISBN(isbn) {
   var dfd = $.Deferred()
-  var tomatoMaps = window.sessionStorage.getItem('tomato-maps')
-  if (!tomatoMaps || tomatoMaps === undefined) {
-    window.sessionStorage.setItem('tomato-maps', JSON.stringify({}))
-  } else {
-    tomatoMaps = JSON.parse(tomatoMaps)
-  }
-  tomatoMaps = tomatoMaps || {}
   sendMessage({
     action: "getSubjectIdByISBN",
     payload: {isbn: isbn}
   }, function(response) {
     if (response.existed) {
-      tomatoMaps[isbn] = response.subject.id
-      window.sessionStorage.setItem('tomato-maps', JSON.stringify(tomatoMaps))
       dfd.resolve(response.subject)
     } else {
       dfd.reject(response.message)
@@ -47,7 +38,7 @@ function getResourcesByISBN(isbn, type, limit, user) {
     action = 'fetchLatestResources'
   }
 
-  getSubjectIdByISBN(isbn).then(function(subject) {
+  getSubjectByISBN(isbn).then(function(subject) {
     sendMessage({
       action: action,
       payload: {subjectId: subject.id, user: user}
@@ -127,7 +118,7 @@ function addResource(isbn, title, url, description) {
   if (ENV.fixture) {
     dfd.resolve(true)
   } else {
-    getSubjectIdByISBN(isbn).then((subject) => {
+    getSubjectByISBN(isbn).then((subject) => {
       sendMessage({
         action: 'addResource',
         payload: {
