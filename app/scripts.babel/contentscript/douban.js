@@ -313,7 +313,7 @@ var anonUI = (message) => {
 }
 
 var preparingUI = (isbn) => {
-  var source = `
+  var src = `
   <div class="mod-hd tomato-loading">
     <h2>
       <span>番茄正在初始化</span>
@@ -321,7 +321,8 @@ var preparingUI = (isbn) => {
     </h2>
   </div>
   `
-  var $el = $(template({}))
+  var tpl = Handlebars.compile(src)
+  var $el = $(tpl({}))
   $el.insertAfter($("#db-tags-section"))
 
   var timer
