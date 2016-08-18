@@ -155,6 +155,7 @@ var template = Handlebars.compile(source)
 var isbnMatch = $(".subject #info").html().match(/(97[89]\d{9}[\dXx])/)
 var isbn = isbnMatch[1]
 var G_subject
+var G_max_retries = 5
 
 var authUI = (user, subject) =>  {
   $.when(
@@ -328,13 +329,15 @@ var preparingUI = (isbn) => {
 
   var timer
   var check = () => {
-    if (G_subject) {
+    if (G_subject || G_max_retries < 0) {
       clearInterval(timer)
+      $(".tomato-loading").remove()
     } else {
       getSubjectByISBN(isbn).then((subject) => {
         G_subject = subject
         render(false)
       })
+      G_max_retries = G_max_retries - 1
     }
   }
   timer = setInterval(check, 3000)
