@@ -81,7 +81,7 @@ function getUserInfo(token) {
   } else {
     $.ajax({
       method: 'GET',
-      url: `${ ENV.remote }/api/1/user`,
+      url: `${ ENV.remote }/api/1/user/`,
       dataType: 'json',
       headers: {
         'Authorization': `Bearer ${ token }`
