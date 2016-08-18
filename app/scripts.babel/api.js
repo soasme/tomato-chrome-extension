@@ -77,6 +77,20 @@ function getUserInfo() {
   return dfd.promise()
 }
 
+function revoke() {
+  var dfd = jQuery.Deferred()
+  chrome.runtime.sendMessage({
+    action: 'revoke'
+  }, function(response) {
+    if (response.message === 'OK') {
+      dfd.resolve(true)
+    } else {
+      dfd.reject(resposne.message)
+    }
+  })
+  return dfd.promise()
+}
+
 function requireLogin() {
   var dfd = jQuery.Deferred()
   chrome.runtime.sendMessage({
