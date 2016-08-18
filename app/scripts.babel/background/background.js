@@ -2,6 +2,7 @@ var ENV = {
   // remote: null,
   remote: 'http://127.0.0.1:8000',
   // remote: 'https://tomato.today',
+  client_id: 'juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI',
 }
 
 chrome.runtime.onInstalled.addListener(details => {
@@ -20,7 +21,7 @@ function getAuthToken(config) {
       console.debug('tomato', 'using token in storage', storage.token)
       dfd.resolve(storage.token || null)
     } else if (required){
-      var url = `${ ENV.remote }/oauth2/authorize/?client_secret=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&client_id=juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI&response_type=token&scope=resource&redirect_uri=` + encodeURI(chrome.identity.getRedirectURL("provider_cb"));
+      var url = `${ ENV.remote }/oauth2/authorize/?client_id=${ ENV.client_id }&response_type=token&scope=resource&redirect_uri=` + encodeURI(chrome.identity.getRedirectURL("provider_cb"));
       console.debug('tomato', 'lauching web auth flow', url)
       chrome.identity.launchWebAuthFlow({
         'interactive': true,
@@ -45,6 +46,32 @@ function getAuthToken(config) {
     }
   })
   return dfd.promise()
+}
+
+function revoke(token) {
+  var dfd = $.Deferred()
+  if (!ENV.remote) {
+    dfd.resolve(true)
+  } else {
+    $.ajax({
+      method: "POST",
+      url: `${ ENV.remote }/oauth2/revoke_token/`,
+      data: {
+        token: token,
+        client_id: ENV.client_id,
+      }
+    }).then((data, status, xhr) => {
+      if (xhr.status === 200) {
+        chrome.storage.local.remove(['token'], function(storage) {
+          dfd.resolve(true)
+        })
+      } else {
+        dfd.resolve(data)
+      }
+    }, (xhr) => {
+      dfd.reject('requestFailed')
+    })
+  }
 }
 
 function getUserInfo(token) {
@@ -295,13 +322,14 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         sendResponse({message: message, fetched: false})
       })
       return true
-    case "logout":
-      chrome.storage.local.remove(['token'], function(storage) {
-        sendResponse({
-          message: 'success',
-          loggedOut: true
-        })
-      })
+    case "revoke":
+      getAuthToken({required: false}).then(
+        revoke,
+        (message) => { sendResponse({message: message, revoked: false})}
+      ).then(
+        (revoked) => { sendResponse({message: 'OK', revoked: true})},
+        (message) => { sendResponse({message: message, revoked: false})}
+      )
       return true
     default:
       sendResponse({
