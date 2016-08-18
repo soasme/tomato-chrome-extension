@@ -138,4 +138,3 @@ function addResource(isbn, title, url, description) {
   }
   return dfd.promise()
 }
-
