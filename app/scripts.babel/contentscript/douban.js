@@ -329,9 +329,12 @@ var preparingUI = (isbn) => {
 
   var timer
   var check = () => {
-    if (G_subject || G_max_retries < 0) {
+    if (G_subject) {
       clearInterval(timer)
-      $(".tomato-loading").remove()
+      $(".tomato-loading h2 span").html('番茄初始化完成')
+    } else if (G_max_retries < 0) {
+      clearInterval(timer)
+      $(".tomato-loading h2 span").html('番茄初始化失败')
     } else {
       getSubjectByISBN(isbn).then((subject) => {
         G_subject = subject
