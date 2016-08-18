@@ -302,6 +302,7 @@ var anonUI = (message) => {
   }
   var $el = $(template(data))
   $el.insertAfter($("#db-tags-section"))
+  $(".tomato-loading").remove()
 
   $(".login").on('click', function(e) {
     requireLogin().then((token) => {
