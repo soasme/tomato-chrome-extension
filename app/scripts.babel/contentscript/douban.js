@@ -184,8 +184,7 @@ getUserInfo().then(
             resources: userResources
           }
         ],
-        resourcesUrl: `https://tomato.today/isbn/${ isbn }/resources`,
-        addResourceUrl: `https://tomato.today/isbn/${ isbn }/resources`,
+        resourcesUrl: `https://tomato.today/isbn/${ isbn }/`
       }
 
       // render template
@@ -290,8 +289,7 @@ getUserInfo().then(
           resources: []
         }
       ],
-      resourcesUrl: `https://tomato.today/isbn/${ isbn }/resources`,
-      addResourceUrl: `https://tomato.today/isbn/${ isbn }/resources`,
+      resourcesUrl: `https://tomato.today/isbn/${ isbn }/resources`
     }
     var $el = $(template(data))
     $el.insertAfter($("#db-tags-section"))
