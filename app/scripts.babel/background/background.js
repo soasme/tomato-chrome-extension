@@ -106,7 +106,7 @@ function getSubjectIdByISBN(token, isbn) {
   } else {
     return $.ajax({
       method: 'GET',
-      url: `${ ENV.remote }/api/1/isbn/${ isbn }/`,
+      url: `${ ENV.remote }/api/1/isbn/${ isbn }/?vendor=douban`,
       dataType: 'json',
       headers: {
         'Authorization': `Bearer ${ token }`
