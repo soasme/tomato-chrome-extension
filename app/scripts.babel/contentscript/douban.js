@@ -114,8 +114,10 @@ var source = `
     <span>/</span>
     {{#if user}}
     <a class="short-resource-tabs " href="javascript:;" data-tab="user">@{{ user.username }}</a>
+    |
+    <a href="javascript:;" class="revoke">退出</a>
     {{else}}
-    <a class="short-resource-tabs " href="javascript:;">登录</a>
+    <a href="javascript:;" class="login">登录</a>
     {{/if}}
   </div>
 </div>
@@ -190,6 +192,15 @@ getUserInfo().then(
       // render template
       var $el = $(template(data))
       $el.insertAfter($("#db-tags-section"))
+
+      // init account
+      $(".revoke").on('click', function(e) {
+        revoke().then((success) => {
+          window.location.reload()
+        }, (message) => {
+          alert('番茄退出失败')
+        })
+      })
 
       // init tab
       $(".short-resource-tabs").on('click', function(e) {
@@ -293,5 +304,13 @@ getUserInfo().then(
     }
     var $el = $(template(data))
     $el.insertAfter($("#db-tags-section"))
+
+    $(".login").on('click', function(e) {
+      requireLogin().then((token) => {
+        window.location.reload()
+      }, (message) => {
+        alert('番茄登录失败')
+      })
+    })
   }
 )
