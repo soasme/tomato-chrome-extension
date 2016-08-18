@@ -159,9 +159,9 @@ var G_max_retries = 5
 
 var authUI = (user, subject) =>  {
   $.when(
-    getResourcesByISBN(isbn, 'latest', 5),
-    getResourcesByISBN(isbn, 'hot', 5),
-    getResourcesByISBN(isbn, 'user', 5, user)
+    getResources(subject, 'latest', 5),
+    getResources(subject, 'hot', 5),
+    getResources(subject, 'user', 5, user)
   ).then(function(
     latestResources,
     hotResources,

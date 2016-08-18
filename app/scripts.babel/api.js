@@ -26,7 +26,7 @@ function getSubjectByISBN(isbn) {
   return dfd.promise()
 }
 
-function getResourcesByISBN(isbn, type, limit, user) {
+function getResources(subject, type, limit, user) {
   var dfd = jQuery.Deferred();
 
   var action = 'fetchUserResources';
@@ -38,17 +38,15 @@ function getResourcesByISBN(isbn, type, limit, user) {
     action = 'fetchLatestResources'
   }
 
-  getSubjectByISBN(isbn).then(function(subject) {
-    sendMessage({
-      action: action,
-      payload: {subjectId: subject.id, user: user}
-    }, function(response) {
-      if (response.fetched) {
-        dfd.resolve(response.resources)
-      } else {
-        dfd.resolve([])
-      }
-    })
+  sendMessage({
+    action: action,
+    payload: {subjectId: subject.id, user: user}
+  }, function(response) {
+    if (response.fetched) {
+      dfd.resolve(response.resources)
+    } else {
+      dfd.resolve([])
+    }
   })
 
   return dfd.promise();
