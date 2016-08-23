@@ -331,7 +331,7 @@ var preparingUI = (isbn) => {
   var check = () => {
     if (G_subject) {
       clearInterval(timer)
-      $(".tomato-loading h2 span").html('番茄初始化完成')
+      $(".tomato-loading h2 span").remove()
     } else if (G_max_retries < 0) {
       clearInterval(timer)
       $(".tomato-loading h2 span").html('番茄初始化失败')
