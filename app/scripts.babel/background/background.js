@@ -145,10 +145,10 @@ function addResource(token, subjectId, title, url, description) {
       'Content-Type':'application/json'
     }
   }).done(function(data, status, xhr) {
-    if (xhr.status == 200) {
+    if (xhr.status === 201) {
       dfd.resolve(data.id)
     } else {
-      dfd.reject(data.message)
+      dfd.reject(data.detail)
     }
   }).fail(function(xhr) {
     dfd.reject('requestFailed')
