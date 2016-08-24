@@ -94,6 +94,17 @@ var source = `
   #resource-list-wrapper .resource-list.show {
     display: block
   }
+
+  .tomato-resource-form .tomato-resource-form-ft {
+    padding: 10px 18px;
+    width: 100%;
+    margin: 0 -18px;
+    clear: both;
+    background: #e9eef2;
+    border-top: 1px solid #d9e2e9;
+    overflow: hidden;
+    margin-top: 15px;
+  }
 </style>
 <div class="mod-hd">
   <a class="redbutt j add-resource-btn rr">
@@ -247,8 +258,10 @@ var authUI = (user, subject) =>  {
                 <textarea name="description" class="comment" id="description" maxlength="350"></textarea>
               </li>
               </ul>
-              <div id="tomato-submits">
-                <input type="submit" value="保存" name="save">
+              <div id="tomato-submits" class="tomato-resource-form-ft">
+                <span class="bn-flat">
+                  <input type="submit" value="保存" name="save">
+                </span>
               </div>
             </form>
           </div>
