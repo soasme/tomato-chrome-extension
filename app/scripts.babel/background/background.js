@@ -2,11 +2,11 @@ var ENV = {
   // remote: null,
   // client_id: '',
 
-  //remote: 'http://127.0.0.1:8000',
-  //client_id: 'juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI',
+  remote: 'http://127.0.0.1:8000',
+  client_id: 'juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI',
 
-  remote: 'https://tomato.today',
-  client_id: '5jyAB2ZXGcHX8P9l9rllayl3FHp7PnCDjRhDYaJv',
+  //remote: 'https://tomato.today',
+  //client_id: '5jyAB2ZXGcHX8P9l9rllayl3FHp7PnCDjRhDYaJv',
 }
 
 chrome.runtime.onInstalled.addListener(details => {
@@ -268,11 +268,10 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
                            request.payload.title,
                            request.payload.url,
                            request.payload.description)
-      }).done(function(id) {
-        sendResponse({message: 'OK', created: true, id: id})
-      }).fail(function(message) {
-        sendResponse({message: message, created: false})
-      })
+      }).then(
+        (id) => { sendResponse({message: 'OK', created: true, id: id}) },
+        (message) => { sendResponse({message: message, created: false}) }
+      )
       return true
 
     case "voteResource":
