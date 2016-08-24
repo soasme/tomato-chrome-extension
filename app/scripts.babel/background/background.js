@@ -1,13 +1,24 @@
-var ENV = {
-  // remote: null,
-  // client_id: '',
+var ENVs = {
+  fixture: {
+    remote: null,
+    client_id: '',
+    storage_prefix: 'fixture.',
+  },
 
-  // remote: 'http://127.0.0.1:8000',
-  // client_id: 'juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI',
+  dev: {
+   remote: 'http://127.0.0.1:8000',
+   client_id: 'juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI',
+   storage_prefix: 'dev.',
+  },
 
-  remote: 'https://tomato.today',
-  client_id: '5jyAB2ZXGcHX8P9l9rllayl3FHp7PnCDjRhDYaJv',
+  prod: {
+   remote: 'https://tomato.today',
+   client_id: '5jyAB2ZXGcHX8P9l9rllayl3FHp7PnCDjRhDYaJv',
+   storage_prefix: '',
+  }
 }
+
+var ENV = ENVs.prod
 
 chrome.runtime.onInstalled.addListener(details => {
   console.log('previousVersion', details.previousVersion);
@@ -21,9 +32,9 @@ function getAuthToken(config) {
     console.log('tomato', 'storage', storage)
     if (!ENV.remote) {
       dfd.resolve('THIS_IS_MOCK_TOKEN')
-    } else if (storage.token) {
-      console.debug('tomato', 'using token in storage', storage.token)
-      dfd.resolve(storage.token || null)
+    } else if (storage['${ ENV.storage_prefix }token']) {
+      console.debug('tomato', 'using token in storage', storage['${ ENV.storage_prefix }token'])
+      dfd.resolve(storage['${ ENV.storage_prefix }token']|| null)
     } else if (required){
       var url = `${ ENV.remote }/oauth2/authorize/?client_id=${ ENV.client_id }&response_type=token&scope=resource&redirect_uri=` + encodeURI(chrome.identity.getRedirectURL("provider_cb"));
       console.debug('tomato', 'lauching web auth flow', url)
@@ -37,7 +48,7 @@ function getAuthToken(config) {
         if (match) {
           token = match[1]
           console.debug('tomato', 'web auth flow token got', token)
-          chrome.storage.local.set({token: token}, function() {
+          chrome.storage.local.set({'${ ENV.storage_prefix }token': token}, function() {
             console.debug('tomato', 'save token', token)
             dfd.resolve(token)
           })
