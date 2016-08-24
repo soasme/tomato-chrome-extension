@@ -32,9 +32,9 @@ function getAuthToken(config) {
     console.log('tomato', 'storage', storage)
     if (!ENV.remote) {
       dfd.resolve('THIS_IS_MOCK_TOKEN')
-    } else if (storage['${ ENV.storage_prefix }token']) {
-      console.debug('tomato', 'using token in storage', storage['${ ENV.storage_prefix }token'])
-      dfd.resolve(storage['${ ENV.storage_prefix }token']|| null)
+    } else if (storage[ENV.storage_prefix + 'token']) {
+      console.debug('tomato', 'using token in storage', storage[ENV.storage_prefix  + 'token'])
+      dfd.resolve(storage[ENV.storage_prefix  + 'token']|| null)
     } else if (required){
       var url = `${ ENV.remote }/oauth2/authorize/?client_id=${ ENV.client_id }&response_type=token&scope=resource&redirect_uri=` + encodeURI(chrome.identity.getRedirectURL("provider_cb"));
       console.debug('tomato', 'lauching web auth flow', url)
@@ -48,7 +48,9 @@ function getAuthToken(config) {
         if (match) {
           token = match[1]
           console.debug('tomato', 'web auth flow token got', token)
-          chrome.storage.local.set({'${ ENV.storage_prefix }token': token}, function() {
+          var storage = {}
+          storage[ENV.storage_prefix + 'token'] = token
+          chrome.storage.local.set(storage, function() {
             console.debug('tomato', 'save token', token)
             dfd.resolve(token)
           })
