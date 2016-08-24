@@ -271,7 +271,7 @@ var authUI = (user, subject) =>  {
         $save.val('保存中...')
         $save.attr('disabled', 'disabled')
         addResource(isbn, title, url, description).then(
-          window.location.reload,
+          (id) => { window.location.reload() },
           function(message){ alert(message) }
         )
       })
