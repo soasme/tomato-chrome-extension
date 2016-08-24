@@ -2,11 +2,11 @@ var ENV = {
   // remote: null,
   // client_id: '',
 
-  remote: 'http://127.0.0.1:8000',
-  client_id: 'juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI',
+  // remote: 'http://127.0.0.1:8000',
+  // client_id: 'juCBOQe1KDB6rcXks8ezCviaAffH7sc9ZMZwhsxI',
 
-  //remote: 'https://tomato.today',
-  //client_id: '5jyAB2ZXGcHX8P9l9rllayl3FHp7PnCDjRhDYaJv',
+  remote: 'https://tomato.today',
+  client_id: '5jyAB2ZXGcHX8P9l9rllayl3FHp7PnCDjRhDYaJv',
 }
 
 chrome.runtime.onInstalled.addListener(details => {
