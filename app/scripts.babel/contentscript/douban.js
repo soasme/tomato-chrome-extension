@@ -258,7 +258,7 @@ var authUI = (user, subject) =>  {
         e.preventDefault()
         var title = $('.tomato-resource-form input[name=title]').val()
         var url = $('.tomato-resource-form input[name=url]').val()
-        var description = $('.tomato-resource-form input[name=description]').val()
+        var description = $('.tomato-resource-form textarea[name=description]').val()
         if (title === '') {
           alert('请填写标题')
           return false
