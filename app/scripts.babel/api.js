@@ -125,9 +125,9 @@ function addResource(isbn, title, url, description) {
           description: description,
           subjectId: subject.id
         }
-      }, (response) => {
+      }, function (response) {
         if (response.created) {
-          dfd.resolve(true)
+          dfd.resolve(response.id)
         } else {
           dfd.reject(response.message)
         }
