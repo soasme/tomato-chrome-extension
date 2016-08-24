@@ -5,9 +5,5 @@
   "dependencies": {
     "handlebars": "~4.0.5",
     "jquery": "~3.1.0"
-  },
-  "devDependencies": {
-    "chai": "~3.5.0",
-    "mocha": "~2.5.3"
   }
 }
