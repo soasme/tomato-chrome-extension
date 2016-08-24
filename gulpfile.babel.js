@@ -10,7 +10,8 @@ const $ = gulpLoadPlugins();
 gulp.task('extras', () => {
   return gulp.src([
     'app/*.*',
-    'app/bower_components/**',
+    "bower_components/jquery/dist/jquery.min.js",
+    "bower_components/handlebars/handlebars.min.js",
     'app/_locales/**',
     '!app/scripts.babel',
     '!app/*.json',
